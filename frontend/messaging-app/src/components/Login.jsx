@@ -28,9 +28,11 @@ const Login = () => {
 
       // Store the token in the browser's local storage for later use
       localStorage.setItem('token', response.data["token"]);
+      localStorage.setItem('username', response.data["username"]);
 
+      
     // Redirect to the welcome page after successful login
-        navigate('/welcome', { state: { username : response.data["username"] } });
+        navigate('/welcome');
 
 
     } catch (error) {

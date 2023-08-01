@@ -1,9 +1,10 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,permission_classes
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from .serializers import UserSerializer
+from rest_framework.permissions import IsAuthenticated
+from .serializers import UserSerializer, UserListSerializer
 from rest_framework import status
 import logging
 
@@ -45,5 +46,17 @@ def userLoginView(request):
         return Response({'token': token.key, 'username': user.username}, status=status.HTTP_200_OK)
     else:
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def allUsersView(request):
+
+    # Get all users except the logged in user
+    other_users = User.objects.exclude(pk=request.user.pk)
+
+    # Serialize the queryset to return the user information using the new serializer
+    serializer = UserListSerializer(other_users, many=True)
+    return Response({"friends": serializer.data})
 
 

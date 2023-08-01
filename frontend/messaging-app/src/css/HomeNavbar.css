@@ -1,0 +1,47 @@
+.home-navbar {
+    color: red;
+    background: rgb(32, 101, 50);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1%;
+ 
+}
+
+.buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+}
+
+.button {
+    color: black;
+    background-color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    border: none;
+    outline: none;
+}
+
+.navigation{
+    display: flex;
+    gap: 4rem;
+
+}
+.navigation .link{
+    color: white;
+    text-decoration: none;
+    font-size: 1rem;
+}
+.navigation .link:hover {
+    font-weight: bold;
+}
+

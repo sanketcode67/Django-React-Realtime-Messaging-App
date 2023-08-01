@@ -20,7 +20,11 @@ def userRegistrationView(request):
         # Generating a token for registered user
         token, created = Token.objects.get_or_create(user=user)
         logger.info(f"new user registered successfully with username {user}")
-        return Response({'token': token.key}, status=status.HTTP_201_CREATED)
+        return Response({'token': token.key, 'message':"user registered successfully, login now."}, status=status.HTTP_201_CREATED)
+    else:
+        if 'username' in serializer.errors and 'A user with that username already exists.' in serializer.errors['username']:
+            logger.error(f"Username already exists.")
+            return Response({'error': 'Username already exists.'}, status=status.HTTP_409_CONFLICT)    
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

@@ -45,6 +45,7 @@ def userLoginView(request):
         logger.info(f"logged in successfully with username {user}")
         return Response({'token': token.key, 'username': user.username}, status=status.HTTP_200_OK)
     else:
+        logger.info("invalid credential for login")
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
         
@@ -57,6 +58,7 @@ def allUsersView(request):
 
     # Serialize the queryset to return the user information using the new serializer
     serializer = UserListSerializer(other_users, many=True)
+    logger.info(f"{request.user} fetched all the users data")
     return Response({"friends": serializer.data})
 
 

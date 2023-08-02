@@ -2,12 +2,13 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Login from './components/Login';
-import WelcomePage from './components/WelcomePage';
+import Dashboard from './components/Dashboard';
 import HomeNavbar from './components/HomeNavbar';
 import Registration from './components/Registration';
 import './css/HomeNavbar.css';
 import './css/Login.css';
 import './css/Registration.css';
+import './css/Dashboard.css';
 
 
 
@@ -30,8 +31,8 @@ const App = () => {
 
         {/* Protected route for the welcome page */}
         <Route
-          path="/welcome"
-          element={isAuthenticated ? <WelcomePage /> : <Navigate to="/login" />}
+          path="/dashboard"
+          element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
         />
 
         {/* Default route - Redirects to login

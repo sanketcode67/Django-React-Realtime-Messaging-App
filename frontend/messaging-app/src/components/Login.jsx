@@ -32,7 +32,7 @@ const Login = () => {
 
       
     // Redirect to the welcome page after successful login
-        navigate('/welcome');
+        navigate('/dashboard');
 
 
     } catch (error) {

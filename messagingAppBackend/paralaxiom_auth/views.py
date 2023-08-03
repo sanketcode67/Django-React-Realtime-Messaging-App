@@ -25,7 +25,7 @@ def userRegistrationView(request):
     else:
         if 'username' in serializer.errors and 'A user with that username already exists.' in serializer.errors['username']:
             logger.error(f"Username already exists.")
-            return Response({'error': 'Username already exists.'}, status=status.HTTP_409_CONFLICT)    
+            return Response({'error': 'Username already exists.'}, status=status.HTTP_409_CONFLICT)            
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -54,11 +54,11 @@ def userLoginView(request):
 def allUsersView(request):
 
     # Get all users except the logged in user
-    other_users = User.objects.exclude(pk=request.user.pk)
+    users = User.objects.all()
 
     # Serialize the queryset to return the user information using the new serializer
-    serializer = UserListSerializer(other_users, many=True)
+    serializer = UserListSerializer(users, many=True)
     logger.info(f"{request.user} fetched all the users data")
-    return Response({"friends": serializer.data})
+    return Response({"users": serializer.data})
 
 

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect ,useContext} from 'react';
+import { UserContext } from './UserContext';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import UserList from './UsersList';
@@ -9,6 +10,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
+  const { username } = useContext(UserContext);
 
   // function to handle selected user
   const handleUserClick = (user) => {
@@ -25,7 +27,7 @@ const Dashboard = () => {
           Authorization: `Token ${token}`,
         },
       });
-      setUsers(response.data.friends);
+      setUsers(response.data.users);
     } catch (error) {
       console.error('Error fetching users:', error);
       // Handle error if needed
@@ -36,8 +38,6 @@ const Dashboard = () => {
     fetchUsersData();
   }, []);
 
-  // extact the username from local storage
-  const username = localStorage.getItem('username');
 
   const handleLogout = () => {
     // Clear the local storage

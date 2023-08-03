@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useContext,useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { UserContext } from './UserContext';
 
 const Login = () => {
-  const [username, setUsername] = useState('');
+  const [username, setUser] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
+  const { setUsername } = useContext(UserContext);
 
   const handleUsernameChange = (event) => {
-    setUsername(event.target.value);
+    setUser(event.target.value);
   };
 
   const handlePasswordChange = (event) => {
@@ -28,11 +30,11 @@ const Login = () => {
 
       // Store the token in the browser's local storage for later use
       localStorage.setItem('token', response.data["token"]);
-      localStorage.setItem('username', response.data["username"]);
+      setUsername(username);
 
       
     // Redirect to the welcome page after successful login
-        navigate('/dashboard');
+    navigate('/dashboard',);
 
 
     } catch (error) {

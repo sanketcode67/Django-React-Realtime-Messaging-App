@@ -45,6 +45,8 @@ LOGGING = {
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -55,6 +57,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'paralaxiom_auth',
     'corsheaders',
+    
 ]
 
 
@@ -93,7 +96,18 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'messagingAppBackend.wsgi.application'
+ASGI_APPLICATION = 'messagingAppBackend.asgi.application'
+
+
+# channel layers
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('localhost', 6379)],
+        },
+    },
+}
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",

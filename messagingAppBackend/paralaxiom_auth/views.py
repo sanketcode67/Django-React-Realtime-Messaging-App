@@ -64,10 +64,11 @@ def allUsersView(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])   
 def logout_view(request):
-    # Get the user's token
+
+    # get the current user
     user = request.user
     try:
-        # Try to delete the token associated with the user
+        # get the token
         token = Token.objects.get(user=user)
         token.delete()
         logger.info(f" username {user} logged out successfully")

@@ -34,7 +34,7 @@ const Login = () => {
 
       
     // Redirect to the welcome page after successful login
-    navigate('/dashboard',);
+    navigate('/dashboard', { state: { username } });
 
 
     } catch (error) {

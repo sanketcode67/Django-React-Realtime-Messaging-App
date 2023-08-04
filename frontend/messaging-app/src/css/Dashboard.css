@@ -15,8 +15,10 @@
     display: flex;
   }
   
-  .left {
+  .dashboard .left {
     flex: 30;
+    max-height: 100%;
+    overflow-y: auto;
   }
   
   .right {

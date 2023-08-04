@@ -1,0 +1,32 @@
+.user-list ul {
+    margin: 0;
+    margin-right: 10px;
+    padding: 0;
+}
+.user-list .user-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    border: 2px solid green;
+    margin-bottom: 10px;
+    padding: 10px;
+}
+.user-list .user-card .fullname {
+    color: black;
+    font-weight: bold;
+}
+.user-list .user-card .buttons-container {
+    display: flex;
+    gap: 10px;
+}
+
+.user-card button {
+    background-color: rgb(32, 101, 50);
+    width: 35%;
+    color: white;
+    border: none;
+    outline: none;
+    padding: 5px;
+    border-radius: 15px;
+}
+

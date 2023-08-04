@@ -1,16 +1,17 @@
-import React, { useState, useEffect ,useContext} from 'react';
-import { UserContext } from './UserContext';
+import React, { useState, useEffect} from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import UserList from './UsersList';
 import Chat from './Chat';
+import { useLocation } from 'react-router-dom';
 
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
-  const { username } = useContext(UserContext);
+  const location = useLocation();
+  const username = location.state?.username || null;
 
   // function to handle selected user
   const handleUserClick = (user) => {
@@ -39,11 +40,24 @@ const Dashboard = () => {
   }, []);
 
 
-  const handleLogout = () => {
-    // Clear the local storage
-    localStorage.clear();
-    // Redirect to the login page
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('http://127.0.0.1:8000/auth/logout/', {
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      });
+  
+      if (response.status === 200) {
+        localStorage.clear();
+        navigate('/login');
+      } else {
+        console.error('Logout failed:', response.data);
+      }
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
 
   return (
@@ -52,7 +66,7 @@ const Dashboard = () => {
     <button type='submit' onClick={handleLogout}>Logout</button>
     <div className='card'>
       <div className='left'>
-        <UserList users={users} handleUserClick={handleUserClick} />
+        <UserList users={users} username={username} handleUserClick={handleUserClick} />
       </div>
       <div className='right'>
         <Chat selectedUser={selectedUser}></Chat>

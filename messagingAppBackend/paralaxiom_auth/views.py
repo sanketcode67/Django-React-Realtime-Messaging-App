@@ -17,11 +17,8 @@ def userRegistrationView(request):
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
-
-        # Generating a token for registered user
-        token, created = Token.objects.get_or_create(user=user)
         logger.info(f"new user registered successfully with username {user}")
-        return Response({'token': token.key, 'message':"user registered successfully, login now."}, status=status.HTTP_201_CREATED)
+        return Response({'message':"user registered successfully, login now."}, status=status.HTTP_201_CREATED)
     else:
         if 'username' in serializer.errors and 'A user with that username already exists.' in serializer.errors['username']:
             logger.error(f"Username already exists.")
@@ -60,5 +57,27 @@ def allUsersView(request):
     serializer = UserListSerializer(users, many=True)
     logger.info(f"{request.user} fetched all the users data")
     return Response({"users": serializer.data})
+
+
+
+# logout view
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])   
+def logout_view(request):
+    # Get the user's token
+    user = request.user
+    try:
+        # Try to delete the token associated with the user
+        token = Token.objects.get(user=user)
+        token.delete()
+        logger.info(f" username {user} logged out successfully")
+        return Response({'message': 'Logged out successfully'}, status=status.HTTP_200_OK)
+    except Token.DoesNotExist:
+        logger.error(f"Token not found for user {user}")
+        return Response({'error': 'Token not found'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        logger.error(f"Error during logout: {e}")
+        return Response({'error': 'Something went wrong'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 

@@ -9,6 +9,9 @@ import './css/HomeNavbar.css';
 import './css/Login.css';
 import './css/Registration.css';
 import './css/Dashboard.css';
+import './css/UserList.css';
+import './css/Chat.css';
+
 
 
 

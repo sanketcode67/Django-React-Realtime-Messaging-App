@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import UserList from './UsersList';
@@ -6,12 +6,17 @@ import Chat from './Chat';
 import { useLocation } from 'react-router-dom';
 
 
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
+
   const location = useLocation();
-  const username = location.state?.username || null;
+  const username = location.state?.user;
+  const userId = location.state?.userId;
+
+
 
   // function to handle selected user
   const handleUserClick = (user) => {
@@ -62,14 +67,16 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard">
-    <h2>Welcome, {username}!</h2>
+    <h2>Welcome, {username} {userId}!</h2>
     <button type='submit' onClick={handleLogout}>Logout</button>
+    <button type='submit' onClick={handleLogout}>Change Password</button>
+
     <div className='card'>
       <div className='left'>
         <UserList users={users} username={username} handleUserClick={handleUserClick} />
       </div>
       <div className='right'>
-        <Chat selectedUser={selectedUser}></Chat>
+      {selectedUser && <Chat selectedUser={selectedUser} username={username} userId = {userId}/>}
       </div>
     </div>
   </div>

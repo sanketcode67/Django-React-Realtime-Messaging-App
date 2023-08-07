@@ -10,7 +10,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'messagingAppBackend.settings')
 application = get_asgi_application()
 
 ws_patterns = [
-    path("ws/<int:other_user>/",consumers.ChatConsumer.as_asgi())
+    path("ws/<str:room_name>/",consumers.ChatConsumer.as_asgi())
 ]
 
 application = ProtocolTypeRouter(

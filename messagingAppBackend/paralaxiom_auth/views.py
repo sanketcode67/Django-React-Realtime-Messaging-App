@@ -7,6 +7,7 @@ from django.contrib.auth.hashers import make_password
 from rest_framework.permissions import IsAuthenticated
 from .serializers import UserSerializer, UserListSerializer
 from rest_framework import status
+from django.core import serializers
 import logging
 
 logger = logging.getLogger("auth_module")
@@ -41,7 +42,7 @@ def userLoginView(request):
     if user is not None:
         token, created = Token.objects.get_or_create(user=user)
         logger.info(f"logged in successfully with username {user}")
-        return Response({'token': token.key, 'username': user.username}, status=status.HTTP_200_OK)
+        return Response({'token': token.key, 'username': user.username , 'user_id': user.id}, status=status.HTTP_200_OK)
     else:
         logger.info("invalid credential for login")
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)

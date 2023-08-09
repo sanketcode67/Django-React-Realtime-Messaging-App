@@ -1,8 +1,8 @@
-import React, {useState , useEffect } from 'react';
+import React, {useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
+const Login = ({setAuthenticated}) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -28,6 +28,7 @@ const Login = () => {
 
       // Store the token in the browser's local storage for later use
       localStorage.setItem('token', response.data["token"]);
+      setAuthenticated(true)
       const name = response.data["username"]
       const user_id = response.data["user_id"];
 
@@ -35,6 +36,7 @@ const Login = () => {
       
     // Redirect to the dashboard page after successful login
     navigate('/dashboard', { state: { user:name, userId: user_id } });
+    console.log("control coming inside")
 
 
     } catch (error) {

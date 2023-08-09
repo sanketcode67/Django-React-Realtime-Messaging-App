@@ -7,7 +7,7 @@ import { useLocation } from 'react-router-dom';
 
 
 
-const Dashboard = () => {
+const Dashboard = ({setAuthenticated}) => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -59,6 +59,7 @@ const Dashboard = () => {
   
       if (response.status === 200) {
         localStorage.clear();
+        setAuthenticated(false)
         navigate('/login');
       } else {
         console.error('Logout failed:', response.data);

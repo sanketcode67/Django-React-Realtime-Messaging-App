@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
@@ -19,29 +19,34 @@ Modal.setAppElement('#root');
 
 
 const App = () => {
+  const [authenticated, setAuthenticated] = useState("")
 
 
-  //check to see if the user is authenticated
-  const isAuthenticated = !!localStorage.getItem('token');
+  useEffect(() => {
+    const isAuthenticated = !!localStorage.getItem('token');
+    setAuthenticated(isAuthenticated);
+  }, []);
 
   return (
     <Router>
-      <HomeNavbar></HomeNavbar>
+      <HomeNavbar authenticated={authenticated}></HomeNavbar>
       <Routes>
         {/* Route for the login page */}
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Login setAuthenticated={setAuthenticated}/>} />
 
         {/* Route for the registration page */}
         <Route path="/registration" element={<Registration />} />
 
+        {/* <Route path="/dashboard" element={<Dashboard />} /> */}
+
         {/* Protected route for the welcome page */}
         <Route
           path="/dashboard"
-          element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
+          element={authenticated ? <Dashboard setAuthenticated={setAuthenticated}/> : <Navigate to="/login" replace />}
         />
 
-        {/* Default route - Redirects to login
-        <Route path="/" element={<Navigate to="/login" />} /> */}
+        {/* Default route - Redirects to login */}
+        <Route path="/" element={<Navigate to="/login" />} />
       </Routes>
     </Router>
   );

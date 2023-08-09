@@ -50,30 +50,56 @@ class ChatConsumer(AsyncWebsocketConsumer):
     # Receive message from web socket
     async def receive(self, text_data):
         data = json.loads(text_data)
-        message = data['message']
-        username = data['username']
-        room = data['room']
-        timestamp = data['timestamp']
 
-        format_string = "%Y-%m-%dT%H:%M:%S.%fZ"
-        timestamp_dt = datetime.strptime(timestamp, format_string)
-        
+        # if type is message then send the message to the room
+        if data['type'] == "message":
 
-        message_id = await self.save_message(username, room, message, timestamp_dt)
+            message = data['message']
+            username = data['username']
+            room = data['room']
+            timestamp = data['timestamp']
 
-        timestamp_str = timestamp_dt.isoformat()
+            format_string = "%Y-%m-%dT%H:%M:%S.%fZ"
+            timestamp_dt = datetime.strptime(timestamp, format_string)
+            
 
-        # Send message to room group
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                'type': 'chat_message',
-                'id': message_id,
-                'message': message,
-                'username': username,
-                'timestamp': timestamp_str,
-            }
-        )
+            message_id = await self.save_message(username, room, message, timestamp_dt)
+
+            timestamp_str = timestamp_dt.isoformat()
+
+            # Send message to room group
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'chat_message',
+                    'id': message_id,
+                    'message': message,
+                    'username': username,
+                    'timestamp': timestamp_str,
+                }
+            )
+
+        elif data['type'] == 'delete':
+            message_id = data["message_id"]
+
+            await self.delete_message(message_id)
+
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'delete_chat_message',
+                    'message_id': message_id,
+                }
+            )
+
+            
+            
+            
+
+
+
+
+
 
     # Receive message from room group
     async def chat_message(self, event):
@@ -90,10 +116,32 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'timestamp': timestamp,
         }))
 
+        # Receive message from room group
+    async def delete_chat_message(self, event):
+        message_id = event["message_id"]
+
+        # Send message to WebSocket
+        await self.send(text_data=json.dumps({
+            'action':'delete',
+            'message_id': message_id,
+        }))    
+
+    
+
     @sync_to_async
     def save_message(self, username, room, message, timestamp):
         message_obj = Message.objects.create(username=username, room=room, message=message, timestamp=timestamp)
         return message_obj.id
+
+    @sync_to_async
+    def delete_message(self, message_id):
+        try:
+            message = Message.objects.get(pk=message_id)
+            message.delete()
+            print("message deleted from the database")
+            return True
+        except Message.DoesNotExist:
+            return False    
 
 
     

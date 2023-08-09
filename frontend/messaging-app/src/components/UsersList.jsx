@@ -14,7 +14,6 @@ const UserList = ({ users, handleUserClick, username }) => {
 
   return (
     <div className='user-list'>
-      <h1>Users List</h1>
       <ul>
         {users.map((user) => {
           if (user.username === username) {

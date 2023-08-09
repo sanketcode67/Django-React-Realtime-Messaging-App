@@ -11,6 +11,8 @@ import './css/Registration.css';
 import './css/Dashboard.css';
 import './css/UserList.css';
 import './css/Chat.css';
+import Modal from 'react-modal';
+Modal.setAppElement('#root');
 
 
 

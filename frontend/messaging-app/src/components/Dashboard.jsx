@@ -11,6 +11,8 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+
 
   const location = useLocation();
   const username = location.state?.user;
@@ -34,6 +36,7 @@ const Dashboard = () => {
         },
       });
       setUsers(response.data.users);
+      setFilteredUsers(response.data.users);
     } catch (error) {
       console.error('Error fetching users:', error);
       // Handle error if needed
@@ -64,16 +67,34 @@ const Dashboard = () => {
       console.error('Logout failed:', error);
     }
   };
+  const handleSearchUser = (event) => {
+      const inputData = event.target.value
+      if(inputData === '')
+      { 
+        setFilteredUsers(users);
+      }
+      else
+      {
+        const filteredData = users.filter((user) =>
+          user.first_name.toLowerCase().includes(inputData.toLowerCase())
+        );
+        setFilteredUsers(filteredData);
+      }
+      
+
+  }
 
   return (
     <div className="dashboard">
     <h2>Welcome, {username} {userId}!</h2>
     <button type='submit' onClick={handleLogout}>Logout</button>
-    <button type='submit' onClick={handleLogout}>Change Password</button>
+    <button type='submit'>Change Password</button>
 
     <div className='card'>
       <div className='left'>
-        <UserList users={users} username={username} handleUserClick={handleUserClick} />
+        <input type='text' placeholder='Search User...' onChange={handleSearchUser}></input>
+        <h3>Users List</h3>
+        <UserList users={filteredUsers} username={username} handleUserClick={handleUserClick} />
       </div>
       <div className='right'>
       {selectedUser && <Chat selectedUser={selectedUser} username={username} userId = {userId}/>}

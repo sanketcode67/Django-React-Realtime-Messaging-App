@@ -23,7 +23,6 @@ const Chat = ({ selectedUser , username, userId}) => {
 
   useEffect(() => {
     setMessages([]);
-    console.log('chat component');
     const room = getGroup(userId,selectedUser.id);
     setRoom(room)
 
@@ -32,8 +31,6 @@ const Chat = ({ selectedUser , username, userId}) => {
       .then((response) => {
         // Handle the response and update the messages state
         const fetchedMessages = response.data;
-        console.log("fetching messages")
-        console.log(fetchedMessages)
         setMessages(fetchedMessages);
       })
       .catch((error) => {
@@ -42,32 +39,44 @@ const Chat = ({ selectedUser , username, userId}) => {
 
   }, [userId,selectedUser]);
 
-  const wsUrl = `ws://127.0.0.1:8000/ws/${room}/?token=${token}`;
-  const { sendMessage, lastMessage} = useWebSocket(wsUrl);
+  
 
+  const wsUrl = room ? `ws://127.0.0.1:8000/ws/${room}/?token=${token}` : null;
+  const { sendMessage, lastMessage } = useWebSocket(wsUrl);
 
 
 
   useEffect(() => {
-
     if (lastMessage !== null) {
       // Handle incoming messages from the WebSocket server
       const messageData = JSON.parse(lastMessage.data);
-      console.log(messageData)
+      if(messageData.action && messageData.action === "delete")
+      {
+        // Delete the message with messageData.message_id from the messages state
+        setMessages((prevMessages) =>
+        prevMessages.filter((message) => message.id !== messageData.message_id)
+        );
+      }
       // Here, you can update the state or display the messages as you like
-      setMessages((prevMessages) => [...prevMessages, messageData]);
+      else
+      {
+        setMessages((prevMessages) => [...prevMessages, messageData]);
+      }
+      
     }
   }, [lastMessage]);
 
   
-
+// function to send the message
   const handleSend = () => {
     if (inputMessage.trim() !== '') {
-      // Send the message to the WebSocket server
+      // create the timestamp
       const dateIST = new Date(Date.now() + 5.5 * 60 * 60 * 1000);
       const dateString = dateIST.toISOString();
+      // Send the message to the WebSocket server
       sendMessage(
         JSON.stringify({
+          type: "message",
           message: inputMessage,
           username: username, // You may want to change this to the actual username
           room: room,
@@ -78,9 +87,17 @@ const Chat = ({ selectedUser , username, userId}) => {
     }
   };
 
+
+
+
   // Function to format the timestamp
   const formatTimestamp = (timestamp) => {
     const date = new Date(timestamp);
+
+    // Subtract the hours to convert to Indian Standard Time (IST)
+    const timeZoneOffset = 5.5 * 60 * 60 * 1000; // Indian Standard Time (IST) offset in milliseconds
+    const localTime = new Date(date.getTime() - timeZoneOffset);
+
     const options = {
       hour: '2-digit',
       minute: '2-digit',
@@ -88,20 +105,23 @@ const Chat = ({ selectedUser , username, userId}) => {
       month: 'short',
       year: '2-digit',
     };
-    return new Intl.DateTimeFormat('en-IN', options).format(date);
-  };
+
+    return localTime.toLocaleString('en-IN', options);
+    };
+
+  // function to send the delete request for the message
+  const handleDelete = (message_id) => {
+    sendMessage(
+      JSON.stringify({
+        type: "delete",
+        message_id: message_id,
+      })
+    );
+
+  }
 
   return (
     <div>
-      {/* {selectedUser && (
-        <div>
-          <p>Selected User:</p>
-          <p>User id: {selectedUser.id}</p>
-          <p>First Name: {selectedUser.first_name}</p>
-          <p>Last Name: {selectedUser.last_name}</p>
-          <p>Username: {selectedUser.username}</p>
-        </div>
-      )} */}
       <div className='recepient'>{selectedUser.first_name} {selectedUser.last_name}</div>
       <div className='chatbox'>
         <div className="message-list">
@@ -109,6 +129,7 @@ const Chat = ({ selectedUser , username, userId}) => {
             <div key={index} className="message">
               <p>
               {message.username}: {message.message} : {formatTimestamp(message.timestamp)}
+              {message.username===username? <input type="button" value="delete" onClick={() => handleDelete(message.id)}/> : ""}
               
               </p>
             </div>
@@ -116,14 +137,17 @@ const Chat = ({ selectedUser , username, userId}) => {
         </div>
       </div>
       
-      <input
-        type="text"
-        value={inputMessage}
-        onChange={(event) => setInputMessage(event.target.value)}
-      />
-      <button type="submit" onClick={handleSend}>
-        Send
-      </button>
+      <div className='input-section'>
+        <input className='msg-box' placeholder='Type your message here...'
+          type="text"
+          value={inputMessage}
+          onChange={(event) => setInputMessage(event.target.value)}
+        />
+        <button className='send-btn' type="submit" onClick={handleSend}>
+          Send
+        </button>
+      </div>
+      
     </div>
   );
 };

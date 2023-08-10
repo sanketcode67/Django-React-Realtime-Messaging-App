@@ -7,10 +7,8 @@ const Registration = () => {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-
-  const [emailError, setEmailError] = useState('');
   const [usernameError, setUsernameError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
+  const [message, setMessage] = useState({text:"", color:"black"});
 
   const usernamePattern = /^(?=.*[a-zA-Z])(?=.*\d).+$/;
 
@@ -29,6 +27,8 @@ const Registration = () => {
 
 
   const handleSignup = async (e) => {
+    setUsernameError('')
+    setMessage('')
     e.preventDefault();
     try {
       // Send the signup data to the API
@@ -39,15 +39,27 @@ const Registration = () => {
         username: username,
         password: password,
       });
-      // Handle the successful signup response here (e.g., show a success message)
-      console.log(response.data);
-    } catch (error) {
-      // Handle signup error here (e.g., show an error message)
-      if(error.response.data.error){
-        setUsernameError(error.response.data.error || '');
+      // handle successful signup response here
+      console.log(response.data)
+      if (response.status === 201 ){
+        console.log(response.data.message)
+        setMessage({ text: response.data.message, color: 'green' });
       }
-      else{
-        console.error(error);
+      
+    } catch (error) {
+      // Handle signup error 
+      if(error.response)
+      {
+        if (error.response.status === 409){
+          setUsernameError(error.response.data.error)
+        }
+        if(error.response.status === 400){
+          setMessage({ text: error.response.data.error, color: 'red' });
+        }
+      }
+      else
+      {
+        setMessage({ text: "registration failed , server is down", color: 'red' });
       }
       
     }
@@ -79,6 +91,7 @@ const Registration = () => {
             <label>Password:</label>
             <input type='password' value={password} onChange={(e) => setPassword(e.target.value)} required/>
           </div>
+          {message ? <p style={{ color: message.color }}>{message.text}</p>: ''}
           <button type='submit'>Signup</button>
         </form>
       </div>

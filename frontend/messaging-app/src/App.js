@@ -20,12 +20,13 @@ Modal.setAppElement('#root');
 
 const App = () => {
   const [authenticated, setAuthenticated] = useState("")
+  const isAuthenticated = !!localStorage.getItem('token');
 
 
   useEffect(() => {
-    const isAuthenticated = !!localStorage.getItem('token');
+   
     setAuthenticated(isAuthenticated);
-  }, []);
+  }, [isAuthenticated]);
 
   return (
     <Router>
@@ -37,16 +38,11 @@ const App = () => {
         {/* Route for the registration page */}
         <Route path="/registration" element={<Registration />} />
 
-        {/* <Route path="/dashboard" element={<Dashboard />} /> */}
-
         {/* Protected route for the welcome page */}
         <Route
           path="/dashboard"
-          element={authenticated ? <Dashboard setAuthenticated={setAuthenticated}/> : <Navigate to="/login" replace />}
+          element={authenticated || isAuthenticated? <Dashboard setAuthenticated={setAuthenticated}/> : <Navigate to="/login" replace />}
         />
-
-        {/* Default route - Redirects to login */}
-        <Route path="/" element={<Navigate to="/login" />} />
       </Routes>
     </Router>
   );

@@ -36,7 +36,6 @@ const Login = ({setAuthenticated}) => {
       
     // Redirect to the dashboard page after successful login
     navigate('/dashboard', { state: { user:name, userId: user_id } });
-    console.log("control coming inside")
 
 
     } catch (error) {

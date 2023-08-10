@@ -25,11 +25,16 @@ const Chat = ({ selectedUser , username, userId}) => {
     setMessages([]);
     const room = getGroup(userId,selectedUser.id);
     setRoom(room)
+    const token = localStorage.getItem('token');
 
     // Fetch messages from the backend for the room
-    axios.get(`http://127.0.0.1:8000/api/messages/${room}`)
+    axios.get(`http://127.0.0.1:8000/api/messages/${room}`,{
+      headers: {
+        Authorization: `Token ${token}`,
+      },
+    })
       .then((response) => {
-        // Handle the response and update the messages state
+        //update the messages state
         const fetchedMessages = response.data;
         setMessages(fetchedMessages);
       })
@@ -41,8 +46,11 @@ const Chat = ({ selectedUser , username, userId}) => {
 
   
 
-  const wsUrl = room ? `ws://127.0.0.1:8000/ws/${room}/?token=${token}` : null;
-  const { sendMessage, lastMessage } = useWebSocket(wsUrl);
+  const wsUrl = room ? `ws://127.0.0.1:8000/ws/${room}/` : null;
+  const webSocketOptions = {
+    queryParams: { token }
+  };
+  const { sendMessage, lastMessage } = useWebSocket(wsUrl, webSocketOptions);
 
 
 
@@ -78,7 +86,7 @@ const Chat = ({ selectedUser , username, userId}) => {
         JSON.stringify({
           type: "message",
           message: inputMessage,
-          username: username, // You may want to change this to the actual username
+          username: username,
           room: room,
           timestamp: dateString,
         })
@@ -105,7 +113,6 @@ const Chat = ({ selectedUser , username, userId}) => {
       month: 'short',
       year: '2-digit',
     };
-
     return localTime.toLocaleString('en-IN', options);
     };
 
@@ -129,6 +136,7 @@ const Chat = ({ selectedUser , username, userId}) => {
             <div key={index} className="message">
               <p>
               {message.username}: {message.message} : {formatTimestamp(message.timestamp)}
+
               {message.username===username? <input type="button" value="delete" onClick={() => handleDelete(message.id)}/> : ""}
               
               </p>

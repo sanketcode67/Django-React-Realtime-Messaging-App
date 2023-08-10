@@ -24,7 +24,10 @@ def userRegistrationView(request):
     else:
         if 'username' in serializer.errors and 'A user with that username already exists.' in serializer.errors['username']:
             logger.error(f"Username already exists.")
-            return Response({'error': 'Username already exists.'}, status=status.HTTP_409_CONFLICT)            
+            return Response({'error': 'Username already exists.'}, status=status.HTTP_409_CONFLICT) 
+        else:
+            return Response({'error': 'Registration Failed'}, status=status.HTTP_400_BAD_REQUEST) 
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

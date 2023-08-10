@@ -17,18 +17,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         # authenticate the user based on the token
         user = await self.get_user(token)
+        print(user)
         if not user:
+            print("unauthorised token")
             await self.close()
 
-        current_user_id = user.id
         room_name = self.scope['url_route']['kwargs']['room_name']
 
-
-        # self.room_group_name = self.get_room(current_user_id, other_user_id)
         self.room_group_name = room_name
-
-
-        # print(self.room_group_name)
         
 
         # join room
@@ -65,7 +61,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             message_id = await self.save_message(username, room, message, timestamp_dt)
 
-            timestamp_str = timestamp_dt.isoformat()
+            timestamp_str = timestamp_dt.isoformat()+"Z"
 
             # Send message to room group
             await self.channel_layer.group_send(
@@ -161,8 +157,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         auth_token = self.scope.get('query_string', b'').decode('utf-8')
         if auth_token.startswith('token='):
             auth_token = auth_token[6:]
-        else:
-            auth_token = self.scope.get('headers',{}).get(b'token',b'').decode('utf-8')  
         return auth_token
 
     @database_sync_to_async

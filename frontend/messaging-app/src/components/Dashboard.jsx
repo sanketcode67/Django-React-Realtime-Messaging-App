@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import UserList from './UsersList';
 import Chat from './Chat';
 import { useLocation } from 'react-router-dom';
+import PasswordChangePopup from './PasswordChangePopup';
 
 
 
@@ -12,6 +13,8 @@ const Dashboard = ({setAuthenticated}) => {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [filteredUsers, setFilteredUsers] = useState([]);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
 
   const location = useLocation();
@@ -85,11 +88,22 @@ const Dashboard = ({setAuthenticated}) => {
 
   }
 
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    console.log("Closing the modal");
+    setIsModalOpen(false);
+  };
+
+
   return (
     <div className="dashboard">
-    <h2>Welcome, {username} {userId}!</h2>
+    <h2>Welcome, {username}!</h2>
     <button type='submit' onClick={handleLogout}>Logout</button>
-    <button type='submit'>Change Password</button>
+    <button onClick={handleOpenModal}>Change Password</button>
+    <PasswordChangePopup isOpen={isModalOpen} onClose={handleCloseModal} />
 
     <div className='card'>
       <div className='left'>

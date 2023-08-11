@@ -8,6 +8,9 @@ from rest_framework.exceptions import AuthenticationFailed
 from .models import Message
 from datetime import datetime
 
+import logging
+logger = logging.getLogger("api_module")
+
 class ChatConsumer(AsyncWebsocketConsumer): 
 
     async def connect(self):
@@ -17,9 +20,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         # authenticate the user based on the token
         user = await self.get_user(token)
-        print(user)
         if not user:
-            print("unauthorised token")
+            logger.error("unauthorised token")
             await self.close()
 
         room_name = self.scope['url_route']['kwargs']['room_name']
@@ -134,7 +136,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         try:
             message = Message.objects.get(pk=message_id)
             message.delete()
-            print("message deleted from the database")
             return True
         except Message.DoesNotExist:
             return False    
